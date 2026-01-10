@@ -1,0 +1,102 @@
+{
+  "schema_correctness": [
+    {
+      "id": "count_all",
+      "query": "How many taxi trips are in the database?",
+      "description": "Basic count query"
+    },
+    {
+      "id": "avg_fare",
+      "query": "What is the average fare amount?",
+      "description": "Average aggregation"
+    },
+    {
+      "id": "sum_tips",
+      "query": "What is the total tip amount?",
+      "description": "Sum aggregation"
+    },
+    {
+      "id": "max_distance",
+      "query": "What is the longest trip distance?",
+      "description": "Max aggregation"
+    },
+    {
+      "id": "min_fare",
+      "query": "What is the minimum fare?",
+      "description": "Min aggregation"
+    },
+    {
+      "id": "group_by_payment",
+      "query": "Count trips by payment type",
+      "description": "Group by categorical"
+    },
+    {
+      "id": "time_filter",
+      "query": "How many trips in the last 24 hours?",
+      "description": "Time window filter"
+    },
+    {
+      "id": "combined",
+      "query": "What is the average fare for cash payments?",
+      "description": "Filter + aggregation"
+    }
+  ],
+  "intent_checks": [
+    {
+      "id": "sum_keyword",
+      "query": "What is the total fare amount?",
+      "expected_patterns": ["sum(", "fare_amount"],
+      "description": "Should use SUM on fare_amount"
+    },
+    {
+      "id": "count_keyword",
+      "query": "How many trips are there?",
+      "expected_patterns": ["count("],
+      "description": "Should use COUNT"
+    },
+    {
+      "id": "avg_keyword",
+      "query": "What is the average tip?",
+      "expected_patterns": ["avg(", "tip_amount"],
+      "description": "Should use AVG on tip_amount"
+    },
+    {
+      "id": "group_by_keyword",
+      "query": "Show trip count by payment type",
+      "expected_patterns": ["GROUP BY", "payment_type"],
+      "description": "Should GROUP BY payment_type"
+    },
+    {
+      "id": "time_interval",
+      "query": "Trips in the last 48 hours",
+      "expected_patterns": ["INTERVAL", "HOUR"],
+      "description": "Should use INTERVAL for time filter"
+    },
+    {
+      "id": "limit_keyword",
+      "query": "Show top 10 fares",
+      "expected_patterns": ["LIMIT", "ORDER BY"],
+      "description": "Should use LIMIT and ORDER BY"
+    }
+  ],
+  "determinism": [
+    {
+      "id": "stable_count",
+      "query": "Count all trips",
+      "samples": 5,
+      "description": "Should produce valid SQL consistently"
+    },
+    {
+      "id": "stable_aggregate",
+      "query": "Average fare amount",
+      "samples": 5,
+      "description": "Should produce valid SQL consistently"
+    },
+    {
+      "id": "stable_complex",
+      "query": "Total tips by payment type in the last week",
+      "samples": 5,
+      "description": "Complex query should be stable"
+    }
+  ]
+}

@@ -115,7 +115,6 @@ def generate_sql(natural_language_query: str) -> dict:
 
 
 if __name__ == "__main__":
-    # Test the module
     import sys
 
     if not os.getenv("OPENAI_API_KEY"):
@@ -130,12 +129,7 @@ if __name__ == "__main__":
     ]
 
     print("Testing NL to SQL generation:")
-    print("=" * 60)
-
     for query in test_queries:
         print(f"\nQuery: {query}")
-        result = generate_sql(query, use_cfg=False)  # Use non-CFG for initial testing
-        if result["success"]:
-            print(f"SQL: {result['sql']}")
-        else:
-            print(f"Error: {result['error']}")
+        result = generate_sql(query)
+        print(f"SQL: {result['sql']}" if result["success"] else f"Error: {result['error']}")

@@ -63,13 +63,13 @@ def generate_clickhouse_grammar() -> str:
 // ClickHouse SQL Grammar - Auto-generated from schema
 // For use with OpenAI GPT-5 CFG tool format
 
-// Terminals
-SP: " "
-OPT_SP: / */
-COMMA: "," OPT_SP
+// Whitespace
+WS: /\\s+/
+
+// Punctuation
+COMMA: ","
 LPAREN: "("
 RPAREN: ")"
-SEMI: ";"
 
 // Operators
 GTE: ">="
@@ -77,9 +77,8 @@ GT: ">"
 LTE: "<="
 LT: "<"
 EQ: "="
-MINUS: "-"
 
-// Keywords (case-insensitive via regex)
+// Keywords
 SELECT: /SELECT/i
 FROM: /FROM/i
 WHERE: /WHERE/i
@@ -116,43 +115,42 @@ DATE: /[0-9]{{4}}-[0-9]{{2}}-[0-9]{{2}}/
 DATETIME: /[0-9]{{4}}-[0-9]{{2}}-[0-9]{{2}} [0-9]{{2}}:[0-9]{{2}}:[0-9]{{2}}/
 
 // Main query structure
-start: select_stmt [SEMI]
+start: select_stmt
 
-select_stmt: SELECT SP select_list SP FROM SP TABLE [where_clause] [group_clause] [order_clause] [limit_clause]
+select_stmt: SELECT WS select_list WS FROM WS TABLE [where_clause] [group_clause] [order_clause] [limit_clause]
 
 // SELECT list
-select_list: select_item (COMMA select_item)*
+select_list: select_item (COMMA WS? select_item)*
 select_item: agg_expr | COLUMN | count_star
 count_star: "count()" | "count(*)"
 agg_expr: AGG_FUNC LPAREN AGG_COLUMN RPAREN
 
 // WHERE clause
-where_clause: SP WHERE SP condition (and_condition)*
-and_condition: SP AND SP condition
+where_clause: WS WHERE WS condition (WS AND WS condition)*
 condition: time_condition | eq_condition
 
-// Time filter: datetime_col >= now() - INTERVAL N UNIT
-time_condition: DATETIME_COL OPT_SP comp_op OPT_SP time_expr
+// Time filter
+time_condition: DATETIME_COL WS? comp_op WS? time_expr
 comp_op: GTE | GT | LTE | LT
 time_expr: now_interval | date_literal
-now_interval: NOW LPAREN RPAREN OPT_SP MINUS OPT_SP INTERVAL SP NUMBER SP TIME_UNIT
+now_interval: NOW LPAREN RPAREN WS? "-" WS? INTERVAL WS NUMBER WS TIME_UNIT
 date_literal: "'" (DATETIME | DATE) "'"
 
 // Equality filter
-eq_condition: FILTER_COLUMN OPT_SP EQ OPT_SP "'" STRING_VALUE "'"
+eq_condition: FILTER_COLUMN WS? EQ WS? "'" STRING_VALUE "'"
 
 // GROUP BY
-group_clause: SP GROUP SP BY SP group_list
-group_list: GROUP_COLUMN (COMMA GROUP_COLUMN)*
+group_clause: WS GROUP WS BY WS group_list
+group_list: GROUP_COLUMN (COMMA WS? GROUP_COLUMN)*
 
 // ORDER BY
-order_clause: SP ORDER SP BY SP order_list
-order_list: order_item (COMMA order_item)*
-order_item: COLUMN [SP sort_dir]
+order_clause: WS ORDER WS BY WS order_list
+order_list: order_item (COMMA WS? order_item)*
+order_item: COLUMN (WS sort_dir)?
 sort_dir: ASC | DESC
 
 // LIMIT
-limit_clause: SP LIMIT SP NUMBER
+limit_clause: WS LIMIT WS NUMBER
 '''
     return grammar.strip()
 
