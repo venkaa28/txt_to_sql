@@ -1,0 +1,77 @@
+{
+  "table": "nyc_taxi_trips",
+  "description": "NYC Yellow Taxi trip records",
+  "columns": [
+    {
+      "name": "pickup_datetime",
+      "type": "DateTime",
+      "description": "Pickup timestamp",
+      "filterable": true,
+      "is_datetime": true
+    },
+    {
+      "name": "dropoff_datetime",
+      "type": "DateTime",
+      "description": "Dropoff timestamp",
+      "filterable": false,
+      "is_datetime": true
+    },
+    {
+      "name": "passenger_count",
+      "type": "UInt8",
+      "description": "Number of passengers",
+      "aggregatable": true,
+      "groupable": true
+    },
+    {
+      "name": "trip_distance",
+      "type": "Float64",
+      "description": "Trip distance in miles",
+      "aggregatable": true
+    },
+    {
+      "name": "fare_amount",
+      "type": "Float64",
+      "description": "Base fare amount in USD",
+      "aggregatable": true
+    },
+    {
+      "name": "tip_amount",
+      "type": "Float64",
+      "description": "Tip amount in USD",
+      "aggregatable": true
+    },
+    {
+      "name": "total_amount",
+      "type": "Float64",
+      "description": "Total trip cost in USD",
+      "aggregatable": true
+    },
+    {
+      "name": "payment_type",
+      "type": "String",
+      "description": "Payment method (Cash, Credit, etc.)",
+      "filterable": true,
+      "groupable": true,
+      "allowed_values": ["Cash", "Credit", "No Charge", "Dispute"]
+    },
+    {
+      "name": "pickup_location_id",
+      "type": "UInt16",
+      "description": "TLC Taxi Zone for pickup",
+      "filterable": true,
+      "groupable": true
+    },
+    {
+      "name": "dropoff_location_id",
+      "type": "UInt16",
+      "description": "TLC Taxi Zone for dropoff",
+      "filterable": true,
+      "groupable": true
+    }
+  ],
+  "datetime_column": "pickup_datetime",
+  "supported_aggregates": ["count", "sum", "avg", "min", "max"],
+  "max_limit": 1000,
+  "default_limit": 100
+}

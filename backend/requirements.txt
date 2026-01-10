@@ -1,0 +1,20 @@
+# Backend dependencies
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# OpenAI
+openai>=1.40.0
+
+# SQL validation
+sqlglot>=20.0.0
+
+# Grammar validation (optional, for testing)
+lark>=1.1.0
+
+# HTTP client for Tinybird
+httpx>=0.26.0
+
+# Environment variables
+python-dotenv>=1.0.0
