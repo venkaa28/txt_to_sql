@@ -7,6 +7,7 @@ Endpoints:
 """
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
@@ -18,7 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from llm import generate_sql
-from validator import validate_sql
+from schema_registry import get_default_limit, get_max_limit
+from validator import validate_sql, enforce_limit
 from tinybird import run_query
 from schema_registry import load_schema, get_schema_context_for_llm
 
@@ -42,10 +44,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+frontend_origins = os.getenv(
+    "FRONTEND_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+)
+allowed_origins = [origin.strip() for origin in frontend_origins.split(",") if origin.strip()]
+
 # CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure for production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,6 +62,7 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     query: str
+    schema: Optional[str] = None
 
 
 class QueryResponse(BaseModel):
@@ -72,9 +81,10 @@ async def health():
 
 
 @app.get("/schema")
-async def schema():
+async def schema(schema: Optional[str] = None):
     """Return schema context for debugging."""
-    return {"schema": get_schema_context_for_llm()}
+    schema_name = schema or "default"
+    return {"schema": get_schema_context_for_llm(schema_name)}
 
 
 @app.post("/query", response_model=QueryResponse)
@@ -94,7 +104,8 @@ async def query(request: QueryRequest):
 
     # Step 1: Generate SQL
     logger.info(f"Generating SQL for: {nl_query}")
-    gen_result = generate_sql(nl_query)
+    schema_name = request.schema or "default"
+    gen_result = generate_sql(nl_query, schema_name=schema_name)
 
     if not gen_result["success"]:
         return QueryResponse(
@@ -106,7 +117,7 @@ async def query(request: QueryRequest):
     logger.info(f"Generated SQL: {sql}")
 
     # Step 2: Validate SQL
-    is_valid, errors = validate_sql(sql)
+    is_valid, errors = validate_sql(sql, schema_name=schema_name)
     if not is_valid:
         return QueryResponse(
             success=False,
@@ -114,7 +125,21 @@ async def query(request: QueryRequest):
             error=f"SQL validation failed: {', '.join(errors)}"
         )
 
-    # Step 3: Execute query
+    # Step 3: Enforce LIMIT
+    ok, limited_sql, errors = enforce_limit(
+        sql,
+        default_limit=get_default_limit(schema_name),
+        max_limit=get_max_limit(schema_name)
+    )
+    if not ok:
+        return QueryResponse(
+            success=False,
+            sql=sql,
+            error=f"SQL limit enforcement failed: {', '.join(errors)}"
+        )
+    sql = limited_sql
+
+    # Step 4: Execute query
     logger.info(f"Executing SQL: {sql}")
     exec_result = run_query(sql)
 

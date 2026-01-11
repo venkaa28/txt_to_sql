@@ -9,8 +9,6 @@ import time
 import httpx
 from typing import Any, Dict, List, Optional
 
-from schema_registry import get_default_limit, get_max_limit
-
 
 class TinybirdClient:
     """Client for executing SQL queries against Tinybird."""
@@ -47,9 +45,13 @@ class TinybirdClient:
         start_time = time.time()
 
         try:
+            exec_sql = sql.strip().rstrip(";")
+            if " format " not in exec_sql.lower():
+                exec_sql = f"{exec_sql} FORMAT JSON"
+
             response = self.client.post(
                 "/v0/sql",
-                params={"q": sql}
+                params={"q": exec_sql, "format": "JSON"}
             )
             elapsed_ms = (time.time() - start_time) * 1000
 
@@ -63,18 +65,36 @@ class TinybirdClient:
                     "error": f"Tinybird error {response.status_code}: {response.text}"
                 }
 
-            result = response.json()
+            try:
+                result = response.json()
+            except ValueError:
+                return {
+                    "success": False,
+                    "data": [],
+                    "columns": [],
+                    "row_count": 0,
+                    "elapsed_ms": elapsed_ms,
+                    "error": "Tinybird returned invalid JSON"
+                }
 
             # Tinybird returns {"data": [...], "meta": [...], ...}
-            data = result.get("data", [])
-            meta = result.get("meta", [])
-            columns = [col["name"] for col in meta] if meta else []
+            data = []
+            columns = []
+            if isinstance(result, dict):
+                data = result.get("data", [])
+                meta = result.get("meta", [])
+                if isinstance(meta, list) and meta:
+                    columns = [col["name"] for col in meta if isinstance(col, dict) and "name" in col]
+                if data and isinstance(data[0], list) and columns:
+                    data = [dict(zip(columns, row)) for row in data]
+                elif data and isinstance(data[0], dict) and not columns:
+                    columns = list(data[0].keys())
 
             return {
                 "success": True,
                 "data": data,
                 "columns": columns,
-                "row_count": len(data),
+                "row_count": result.get("rows", len(data)) if isinstance(result, dict) else len(data),
                 "elapsed_ms": elapsed_ms,
                 "error": None
             }

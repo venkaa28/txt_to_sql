@@ -32,6 +32,7 @@
       loading = false;
     }
   }
+
 </script>
 
 <main>
@@ -62,6 +63,7 @@
       elapsedMs={result.elapsed_ms}
     />
   {/if}
+
 </main>
 
 <style>
@@ -120,4 +122,5 @@
       transform: rotate(360deg);
     }
   }
+
 </style>

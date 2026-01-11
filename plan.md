@@ -7,17 +7,18 @@ Build and deploy a small web app where a user types a natural-language question 
 
 ## Success Criteria (Definition of Done)
 - [ ] Deployed app URL with:
-  - [ ] Input box for NL query
-  - [ ] Display generated SQL
-  - [ ] Display query results (table/JSON)
-  - [ ] Clear error states (invalid query, empty results, rate limit, etc.)
-- [ ] GPT-5 call uses **CFG** (not post-hoc regex) to constrain SQL output
+  - [x] Input box for NL query
+  - [x] Display generated SQL
+  - [x] Display query results (table/JSON)
+  - [x] Clear error states (invalid query, empty results, rate limit, etc.)
+- [x] GPT-5 call uses **CFG** (not post-hoc regex) to constrain SQL output
 - [ ] ClickHouse dataset ingested (1000+ rows) and queryable
-- [ ] 3+ evals runnable via script and/or app endpoint
+- [x] 3+ evals runnable via script (CLI)
 - [ ] Public GitHub repo with:
-  - [ ] Clear README (setup, env vars, deploy)
-  - [ ] Architecture overview
-  - [ ] How to run evals
+  - [x] Clear README (setup, env vars, deploy)
+  - [x] Architecture overview
+  - [x] How to run evals
+  - [ ] Deployment URLs
 
 ---
 
@@ -90,8 +91,8 @@ Build and deploy a small web app where a user types a natural-language question 
    - if imdb clickbench dataset is 1000+ rows, fits the above criteria, lets use it! https://github.com/ClickHouse/ClickBench?tab=readme-ov-file
 
 **Deliverables**
-- Table created + populated (1000+ rows)
-- Connection string + read-only credentials (stored in env vars)
+- [ ] Table created + populated (1000+ rows)
+- [ ] Connection string + read-only credentials (stored in env vars)
 
 ---
 
@@ -108,7 +109,7 @@ Support a minimal SQL subset that still answers common questions:
   - equality filters on whitelisted dimensions
 
 **Deliverables**
-- A written “Supported Query Language” section for README
+- [x] A written “Supported Query Language” section for README
 
 ---
 
@@ -121,8 +122,8 @@ Support a minimal SQL subset that still answers common questions:
    - `get_columns()`, `is_valid_column()`, etc.
 
 **Deliverables**
-- Schema registry module
-- Unit test verifying schema loads
+- [x] Schema registry module
+- [x] Unit test verifying schema loads
 
 ---
 
@@ -141,8 +142,8 @@ Support a minimal SQL subset that still answers common questions:
 5. Add a function that produces the CFG string from the schema registry
 
 **Deliverables**
-- `cfg.py` / `cfg.ts` module returning grammar string
-- A couple of tests that ensure grammar contains all required columns and no others
+- [x] `cfg.py` / `cfg.ts` module returning grammar string
+- [ ] A couple of tests that ensure grammar contains all required columns and no others
 
 ---
 
@@ -157,8 +158,8 @@ Support a minimal SQL subset that still answers common questions:
 4. Log the generated SQL in server logs for debugging (avoid logging secrets)
 
 **Deliverables**
-- `generate_sql()` function using GPT-5 with CFG
-- Integration test with a sample NL query
+- [x] `generate_sql()` function using GPT-5 with CFG
+- [ ] Integration test with a sample NL query
 
 ---
 
@@ -172,7 +173,7 @@ Support a minimal SQL subset that still answers common questions:
 2. Fail fast if invalid
 
 **Deliverables**
-- Validator module + tests
+- [x] Validator module + tests
 
 ---
 
@@ -190,8 +191,8 @@ Support a minimal SQL subset that still answers common questions:
    - `elapsed_ms`
 
 **Deliverables**
-- `run_query(sql)` function
-- API endpoint `POST /query`
+- [x] `run_query(sql)` function
+- [x] API endpoint `POST /query`
 
 ---
 
@@ -207,7 +208,7 @@ Support a minimal SQL subset that still answers common questions:
 3. Add loading state
 
 **Deliverables**
-- Deployed UI (Vercel/Netlify) or served by backend
+- [ ] Deployed UI (Vercel/Netlify) or served by backend
 
 ---
 
@@ -281,14 +282,16 @@ Generated SQL not only validates but executes successfully.
 1. Add env var support:
    - `OPENAI_API_KEY`
    - `CLICKHOUSE_*`
+   - `TINYBIRD_*`
+   - `FRONTEND_ORIGINS`
 2. Add `Dockerfile` for backend (optional but helps)
 3. Deploy backend
 4. Deploy frontend pointed to backend URL
 5. Smoke test: run 3 sample queries end-to-end
 
 **Deliverables**
-- Deployed app URL
-- README with deploy instructions
+- [ ] Deployed app URL
+- [ ] README with deploy instructions
 
 ---
 
@@ -311,13 +314,13 @@ README.md
 ---
 
 ## README Checklist
-- [ ] What this app does
-- [ ] Architecture diagram (ASCII)
-- [ ] Supported query subset (explicit)
-- [ ] How CFG is used (link to cookbook section)
-- [ ] Local setup instructions
-- [ ] Env vars
-- [ ] How to run evals
+- [x] What this app does
+- [x] Architecture diagram (ASCII)
+- [x] Supported query subset (explicit)
+- [x] How CFG is used (link to cookbook section)
+- [x] Local setup instructions
+- [x] Env vars
+- [x] How to run evals
 - [ ] Deployment URLs
 
 ---

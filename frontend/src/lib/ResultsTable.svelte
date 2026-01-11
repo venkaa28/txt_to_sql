@@ -6,7 +6,11 @@
   <div class="results-table">
     <h3>
       Results
-      <span class="meta">({rowCount} row{rowCount !== 1 ? 's' : ''}, {elapsedMs.toFixed(1)}ms)</span>
+      <span class="meta"
+        >({rowCount} row{rowCount !== 1 ? "s" : ""}, {elapsedMs.toFixed(
+          1
+        )}ms)</span
+      >
     </h3>
     <div class="table-wrapper">
       <table>
@@ -21,7 +25,7 @@
           {#each data as row}
             <tr>
               {#each columns as col}
-                <td>{row[col] ?? ''}</td>
+                <td>{row[col] ?? ""}</td>
               {/each}
             </tr>
           {/each}
@@ -64,7 +68,8 @@
     font-size: 0.9rem;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem 1rem;
     text-align: left;
     border-bottom: 1px solid #eee;
@@ -87,7 +92,7 @@
   }
 
   td {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Consolas', monospace;
+    font-family: "SF Mono", Monaco, "Cascadia Code", "Consolas", monospace;
     font-size: 0.85rem;
   }
 </style>

@@ -1,5 +1,5 @@
 <script>
-  let { query = $bindable(''), onSubmit, loading = false } = $props();
+  let { query = $bindable(""), onSubmit, loading = false } = $props();
 
   function handleSubmit() {
     if (query.trim() && !loading) {
@@ -8,7 +8,7 @@
   }
 
   function handleKeydown(event) {
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       handleSubmit();
     }
   }
