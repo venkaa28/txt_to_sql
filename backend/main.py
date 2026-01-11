@@ -44,11 +44,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+def _normalize_origin(origin: str) -> str:
+    return origin.strip().rstrip("/")
+
+
 frontend_origins = os.getenv(
     "FRONTEND_ORIGINS",
     "http://localhost:5173,http://127.0.0.1:5173"
 )
-allowed_origins = [origin.strip() for origin in frontend_origins.split(",") if origin.strip()]
+allowed_origins = [
+    _normalize_origin(origin)
+    for origin in frontend_origins.split(",")
+    if origin.strip()
+]
+logger.info("CORS allowed origins: %s", allowed_origins)
 
 # CORS for frontend
 app.add_middleware(
