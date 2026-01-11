@@ -2,6 +2,12 @@
 
 Convert natural language questions to valid ClickHouse SQL using GPT-5's Context-Free Grammar (CFG) constraint.
 
+## Live Demo
+
+- **Frontend**: https://txt-to-sql-sandy.vercel.app
+- **Backend API**: https://txttosql-production.up.railway.app
+- **API Health**: https://txttosql-production.up.railway.app/health
+
 ## Architecture
 
 ```

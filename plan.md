@@ -6,19 +6,19 @@ Build and deploy a small web app where a user types a natural-language question 
 ---
 
 ## Success Criteria (Definition of Done)
-- [ ] Deployed app URL with:
+- [x] Deployed app URL with:
   - [x] Input box for NL query
   - [x] Display generated SQL
   - [x] Display query results (table/JSON)
   - [x] Clear error states (invalid query, empty results, rate limit, etc.)
 - [x] GPT-5 call uses **CFG** (not post-hoc regex) to constrain SQL output
-- [ ] ClickHouse dataset ingested (1000+ rows) and queryable
+- [x] ClickHouse dataset ingested (1000+ rows) and queryable
 - [x] 3+ evals runnable via script (CLI)
-- [ ] Public GitHub repo with:
+- [x] Public GitHub repo with:
   - [x] Clear README (setup, env vars, deploy)
   - [x] Architecture overview
   - [x] How to run evals
-  - [ ] Deployment URLs
+  - [x] Deployment URLs
 
 ---
 
@@ -91,8 +91,8 @@ Build and deploy a small web app where a user types a natural-language question 
    - if imdb clickbench dataset is 1000+ rows, fits the above criteria, lets use it! https://github.com/ClickHouse/ClickBench?tab=readme-ov-file
 
 **Deliverables**
-- [ ] Table created + populated (1000+ rows)
-- [ ] Connection string + read-only credentials (stored in env vars)
+- [x] Table created + populated (1000+ rows)
+- [x] Connection string + read-only credentials (stored in env vars)
 
 ---
 
@@ -143,7 +143,7 @@ Support a minimal SQL subset that still answers common questions:
 
 **Deliverables**
 - [x] `cfg.py` / `cfg.ts` module returning grammar string
-- [ ] A couple of tests that ensure grammar contains all required columns and no others
+- [x] A couple of tests that ensure grammar contains all required columns and no others
 
 ---
 
@@ -159,7 +159,7 @@ Support a minimal SQL subset that still answers common questions:
 
 **Deliverables**
 - [x] `generate_sql()` function using GPT-5 with CFG
-- [ ] Integration test with a sample NL query
+- [x] Integration test with a sample NL query
 
 ---
 
@@ -208,7 +208,7 @@ Support a minimal SQL subset that still answers common questions:
 3. Add loading state
 
 **Deliverables**
-- [ ] Deployed UI (Vercel/Netlify) or served by backend
+- [x] Deployed UI (Vercel/Netlify) or served by backend
 
 ---
 
@@ -290,8 +290,8 @@ Generated SQL not only validates but executes successfully.
 5. Smoke test: run 3 sample queries end-to-end
 
 **Deliverables**
-- [ ] Deployed app URL
-- [ ] README with deploy instructions
+- [x] Deployed app URL
+- [x] README with deploy instructions
 
 ---
 
@@ -321,7 +321,7 @@ README.md
 - [x] Local setup instructions
 - [x] Env vars
 - [x] How to run evals
-- [ ] Deployment URLs
+- [x] Deployment URLs
 
 ---
 
