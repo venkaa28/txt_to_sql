@@ -8,13 +8,15 @@ Endpoints:
 
 import logging
 import os
+import time
+from collections import defaultdict
 from contextlib import asynccontextmanager
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -26,6 +28,49 @@ from schema_registry import load_schema, get_schema_context_for_llm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+# Rate limiting: track requests per IP
+_rate_limit_store = defaultdict(list)  # IP -> [timestamps]
+RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "10"))
+RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "60"))  # seconds
+
+
+def check_rate_limit(request: Request) -> None:
+    """
+    Check if client has exceeded rate limit.
+    Raises HTTPException(429) if limit exceeded.
+
+    Note: Exempts localhost to allow evals to run.
+    """
+    # Get client IP (handle proxies/load balancers)
+    client_ip = request.client.host if request.client else "unknown"
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        client_ip = forwarded.split(",")[0].strip()
+
+    # Exempt localhost/local IPs (for evals and local testing)
+    if client_ip in ["127.0.0.1", "localhost", "::1"]:
+        return
+
+    now = time.time()
+
+    # Clean old requests outside the window
+    _rate_limit_store[client_ip] = [
+        timestamp for timestamp in _rate_limit_store[client_ip]
+        if now - timestamp < RATE_LIMIT_WINDOW
+    ]
+
+    # Check if limit exceeded
+    if len(_rate_limit_store[client_ip]) >= RATE_LIMIT_REQUESTS:
+        logger.warning(f"Rate limit exceeded for IP: {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded. Max {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_WINDOW} seconds."
+        )
+
+    # Record this request
+    _rate_limit_store[client_ip].append(now)
 
 
 @asynccontextmanager
@@ -97,15 +142,19 @@ async def schema(schema: Optional[str] = None):
 
 
 @app.post("/query", response_model=QueryResponse)
-async def query(request: QueryRequest):
+async def query(request: QueryRequest, http_request: Request):
     """
     Convert natural language to SQL and execute against ClickHouse.
 
-    1. Generate SQL using GPT-5 with CFG constraint
-    2. Validate SQL (defense-in-depth)
-    3. Execute against Tinybird
-    4. Return results
+    1. Check rate limit
+    2. Generate SQL using GPT-5 with CFG constraint
+    3. Validate SQL (defense-in-depth)
+    4. Execute against Tinybird
+    5. Return results
     """
+    # Check rate limit first
+    check_rate_limit(http_request)
+
     nl_query = request.query.strip()
 
     if not nl_query:

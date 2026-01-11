@@ -83,7 +83,13 @@ OPENAI_API_KEY=sk-...      # OpenAI API key
 TINYBIRD_TOKEN=p.eyJ...    # Tinybird auth token
 TINYBIRD_HOST=https://api.tinybird.co
 FRONTEND_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+# Rate limiting (optional)
+RATE_LIMIT_REQUESTS=10     # Max requests per window (default: 10)
+RATE_LIMIT_WINDOW=60       # Time window in seconds (default: 60)
 ```
+
+**Note**: Rate limiting is automatically disabled for localhost to allow evals to run.
 
 ## API
 
