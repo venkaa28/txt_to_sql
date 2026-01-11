@@ -15,3 +15,13 @@ export async function executeQuery(query) {
 
   return response.json();
 }
+
+export async function fetchSchema() {
+  const response = await fetch(`${API_URL}/schema`);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  return response.json();
+}
